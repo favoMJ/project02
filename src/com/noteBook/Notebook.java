@@ -70,12 +70,22 @@ public class Notebook {
 	Timer timer = new Timer(delay, evt -> {
 		jsb.setValue(jsb.getValue() + jsb.getUnitIncrement());
 	});
-	public Notebook(InputStream is)
+	public Notebook(InputStream is) throws Exception
 	{
 		this();
-		
+		frameInit();
+		fileOpen(is);
 	}
-	public Notebook() {
+	public Notebook() throws Exception {
+		org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
+
+		// Set windows border type.
+		BeautyEyeLNFHelper.frameBorderStyle = BeautyEyeLNFHelper.FrameBorderStyle.translucencyAppleLike;
+		BeautyEyeLNFHelper.translucencyAtFrameInactive = true;
+		// BeautyEyeLNFHelper.activeCaptionTextColor = new Color(15,233,55);
+
+		// Hide setting button.
+		UIManager.put("RootPane.setupButtonVisible", false);
 
 		frame = new JFrame();
 		frame.setTitle("未命名");
