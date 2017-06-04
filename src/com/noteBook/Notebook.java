@@ -21,7 +21,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Scanner;
 
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
@@ -47,11 +49,12 @@ public class Notebook {
 	private JFrame frame;
 	private JTextArea textArea;
 	private JMenuBar menuBar;
-	private JMenu file, format, search, help;
+	private JMenu file, format, search, help,mark;
 	private JMenuItem open, exit;
 	private JMenuItem font, color, background, speed;
 	private JMenuItem find, changeto;
 	private JMenuItem helps, about;
+	private JMenuItem setMark, openMark;
 	private Boolean autoLineWrap = true;
 	private String fileName = "未命名";// 文件名
 
@@ -60,14 +63,18 @@ public class Notebook {
 	private JScrollBar jsb;
 	private Speed sped;
 	private font font1;
-
+	private BookMark bMark;
 	int delay = 10;
 	
 	//auto increment
 	Timer timer = new Timer(delay, evt -> {
 		jsb.setValue(jsb.getValue() + jsb.getUnitIncrement());
 	});
-
+	public Notebook(InputStream is)
+	{
+		this();
+		
+	}
 	public Notebook() {
 
 		frame = new JFrame();
@@ -102,20 +109,29 @@ public class Notebook {
 		format = new JMenu("格式");
 		search = new JMenu("搜索");
 		help = new JMenu("帮助");
-
-		menuBar.add(file);
-		menuBar.add(format);
-		menuBar.add(search);
-		menuBar.add(help);
-
+		mark = new JMenu("书签"); 
+		
+//		menuBar.add(mark);		
+//		menuBar.add(file);
+//		menuBar.add(format);
+//		menuBar.add(search);
+//		menuBar.add(help);
+		
+		
 		// 文件菜单项
 		open = new JMenuItem("打开...", KeyEvent.VK_O);
 		exit = new JMenuItem("退出");
 		file.add(open);
 		file.add(exit);
 
+		
+		//书签菜单项
+		setMark = new JMenuItem("设置...");
+		openMark = new JMenuItem("打开...");
+		mark.add(setMark);
+		mark.add(openMark);
+		
 		// 格式菜单项
-
 		// autoLine = new JCheckBoxMenuItem("自动换行");
 
 		font = new JMenuItem("字体...");
@@ -150,44 +166,45 @@ public class Notebook {
 		menuBar.add(format);
 		menuBar.add(search);
 		menuBar.add(help);
+		menuBar.add(mark);
 		frame.setJMenuBar(menuBar);
 
 		// sped///
 
 		sped = new Speed(jsb, timer);
 		font1 = new font(textArea);
-
+		bMark = new BookMark();
 		// 调用监听方法
 
 		addEventHandler();
 
-		// ////
-
-		textArea.addMouseListener(new MouseListener() {
-
-			public void mouseClicked(MouseEvent e) {
-
-				if (e.getClickCount() == 2) {
-					timer.start();
-				}
-
-				if (e.getClickCount() == 1) {
-					timer.stop();
-				}
-			}
-
-			public void mouseEntered(MouseEvent arg0) {
-			}
-
-			public void mouseExited(MouseEvent arg0) {
-			}
-
-			public void mousePressed(MouseEvent arg0) {
-			}
-
-			public void mouseReleased(MouseEvent arg0) {
-			}
-		});
+//		// ////
+//
+//		textArea.addMouseListener(new MouseListener() {
+//
+//			public void mouseClicked(MouseEvent e) {
+//
+//				if (e.getClickCount() == 2) {
+//					timer.start();
+//				}
+//
+//				if (e.getClickCount() == 1) {
+//					timer.stop();
+//				}
+//			}
+//
+//			public void mouseEntered(MouseEvent arg0) {
+//			}
+//
+//			public void mouseExited(MouseEvent arg0) {
+//			}
+//
+//			public void mousePressed(MouseEvent arg0) {
+//			}
+//
+//			public void mouseReleased(MouseEvent arg0) {
+//			}
+//		});
 
 		// 监听上下键//
 
@@ -297,7 +314,13 @@ public class Notebook {
 				sped.liser();
 			}
 		}
-
+		);
+		
+		setMark.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				bMark.addEventHandler();
+			}		
+		}
 		);
 	}
 
@@ -346,7 +369,43 @@ public class Notebook {
 		}
 
 	}
+	private void fileOpen(InputStream is) {
 
+		textArea.setText("");
+		if (is == null)
+			return;
+		FileInputStream fis = null;
+		BufferedReader br = null;
+
+		try {
+			Scanner scan = new Scanner(is);
+			String str = null;
+			while (scan.hasNext()) {
+				str = scan.next();
+				textArea.append(str + "\n");
+			}
+
+			System.out.println("打开成功");
+			textArea.setCaretPosition(0);
+
+		} finally {
+			if (br != null)
+				try {
+					br.close();
+				} catch (IOException e) {
+				}
+
+			if (fis != null)
+				try {
+					fis.close();
+				} catch (IOException e) {
+				}
+		}
+
+	}
+	
+	
+	
 	private void fileExit() {
 		int option = -1;
 		Object options[] = { "Yes", "No" };
@@ -486,6 +545,45 @@ class font {
 			}
 		}
 		);
+
+	}
+
+}
+class BookMark {
+
+	private JTextArea textArea;
+
+	JFrame jf = new JFrame("字体设置");
+
+	public BookMark( ) {
+
+		JLabel label1 = new JLabel(" 保存书签 ");
+		JLabel label2 = new JLabel(" 打开书签");
+
+
+		jf.setLayout(new BorderLayout());
+		JPanel p1 = new JPanel();
+		
+
+		p1.add(label1);
+		p1.add(label2);
+
+	
+
+		jf.add(p1, BorderLayout.NORTH);
+
+
+		jf.setSize(540, 200);
+		jf.setLocation(300, 200);
+		jf.setVisible(false);
+		jf.setResizable(false);
+		// addEventHandler();
+	}
+
+	void addEventHandler() {
+		System.out.println("!!");
+		jf.setVisible(false);
+		
 
 	}
 
