@@ -1,10 +1,13 @@
 package com.Servlet;
 
-import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.util.Scanner;
 
+import com.crawler.CatchHtml;
 import com.server.Request;
 import com.server.Response;
 
@@ -15,18 +18,18 @@ public class URLServlet extends Servlet{
 	protected void doGet(Request req, Response rep) {
 		String str = req.getUrl();
 		String newUrl = System.getProperty("user.dir") + "\\" + "root" + "\\" + str + ".txt";
+		
+		check(newUrl,str);
+		
+		
 		System.out.println(newUrl); 
-		DataInputStream dos = null;
+		Scanner scan = null;
 		try {
-			   dos = new DataInputStream(new FileInputStream(newUrl));
-				int len = dos.available();
-				if( len > -1 )
-				{
-					byte[] data = new byte[len];
-					dos.read(data);
-					rep.println(data,len);
+				scan = new Scanner(new FileInputStream(newUrl));
+				while( scan.hasNext() ){
+					String st = scan.nextLine();
+					rep.println(st);
 				}
-				//rep.print()
 				
 		} catch (FileNotFoundException e) {
 			System.out.println("URLServlet file error");
@@ -35,6 +38,15 @@ public class URLServlet extends Servlet{
 		
 	}
 
+	private void check(String newUrl,String name){
+		File file = new File(newUrl);
+		if( file.exists() ){
+			return ;
+		}
+		CatchHtml cat = new CatchHtml();
+		cat.start(name);
+	}
+	
 	@Override
 	protected void doPost(Request req, Response rep) {
 		super.doPost(req, rep);

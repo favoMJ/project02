@@ -83,7 +83,7 @@ public class CatchHtml {
 		Map<String, String> urlMap = getElement(docum);
 		// System.out.println(urlMap.toString());
 		// 通过所有章节url 获取每个章节内容并保存
-		writeFile(siteUrl, filePath, urlMap, "UTF-8", shiftWord, proName);
+		writeFile(siteUrl, filePath + name + ".txt", urlMap, "UTF-8", shiftWord, proName);
 		long endTime = System.currentTimeMillis();
 		System.out.println("The End ! totalSum:" + (totalSum - 1) + " failureSum:" + failureSum);
 		System.out.println("run time: " + (endTime - startTime) / 6000 + "s");
@@ -203,11 +203,21 @@ public class CatchHtml {
 	private String getContents(String eName, String conUrl, String[] shiftWord) {
 		if (conUrl == "" || conUrl == null)
 			return "";
+		
 		String contents = this.getHtmlDoc(conUrl).getElementById("contents").text();
+		
 		// 屏蔽关键词
 		for (String str : shiftWord) {
 			contents = contents.replaceAll(str, "");
 		}
+		contents = contents.replaceAll("     ", "####");
+		contents = contents.replaceAll("####", "\n    ");
+//		contents = contents.replaceAll(" ","\n");
+//		contents = contents.replaceAll("  ","\n");
+		System.out.println(contents);
+		
+		//contents = contents.replaceAll("####","  \n");
+		//System.out.println(contents);
 		// 抓取内容长度大于100 即成功
 		if (contents.length() > 100) {
 			System.out.println("Succeed - " + totalSum + eName);
@@ -256,7 +266,7 @@ public class CatchHtml {
 	
 	public static void main(String[] args) {
 		CatchHtml cat = new CatchHtml();
-		cat.start("");
+		cat.start("教练万岁");
 	}
 	
 	/**

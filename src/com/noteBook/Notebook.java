@@ -359,7 +359,7 @@ public class Notebook {
 				textArea.append(str + "\n");
 			}
 
-			System.out.println("打开成功");
+			//System.out.println("打开成功");
 			textArea.setCaretPosition(0);
 
 		} catch (IOException e1) {
@@ -391,11 +391,11 @@ public class Notebook {
 			Scanner scan = new Scanner(is);
 			String str = null;
 			while (scan.hasNext()) {
-				str = scan.next();
+				str = scan.nextLine();
 				textArea.append(str + "\n");
 			}
 
-			System.out.println("打开成功");
+			//System.out.println("打开成功");
 			textArea.setCaretPosition(0);
 
 		} finally {
@@ -551,7 +551,7 @@ class font {
 
 		cancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				jf.setVisible(false);//
+				jf.setVisible(false);//	
 			}
 		}
 		);

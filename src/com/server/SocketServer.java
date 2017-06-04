@@ -36,6 +36,7 @@ public class SocketServer {
 			t.start();
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
 			isdone = true;
 		}
 	}

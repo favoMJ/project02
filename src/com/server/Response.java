@@ -68,7 +68,12 @@ public class Response {
 			}
 		}
 	}
-
+	
+	public void inTimePush(String msg){
+		pStream.append(msg);
+		pStream.flush();
+	}
+	
 	public void close() throws IOException
 	{
 		pStream.close();

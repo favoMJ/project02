@@ -11,11 +11,10 @@ public class Disaptcher implements Runnable{
 	private Socket socket;
 	private Response rep;
 	private Request req;
-	private int code;
+
 	
-	public Disaptcher()
-	{
-		code = 200;
+	public Disaptcher(){
+		
 	}
 	public Disaptcher(Socket socket)
 	{
@@ -25,7 +24,7 @@ public class Disaptcher implements Runnable{
 			rep = new Response(socket.getOutputStream());
 			req = new Request(socket.getInputStream());
 		} catch (IOException e) {
-			code = 500;
+			
 		}
 	}
 	
@@ -41,7 +40,7 @@ public class Disaptcher implements Runnable{
 				req.close();
 			}
 		} catch (Exception e) {
-			code = 500;
+	
 		}
 	}
 }
