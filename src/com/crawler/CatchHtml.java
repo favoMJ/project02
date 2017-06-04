@@ -1,3 +1,5 @@
+package com.crawler;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -6,17 +8,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import com.search.SearchByName;
 
 /**
  *
@@ -36,33 +40,51 @@ public class CatchHtml {
 	 * 获取失败记录数
 	 */
 	private static int failureSum = 0;
+	// 抓取站点url
+	private String siteUrl = "";
+	// 文字根url
+	private String proName = "";
+	// 保存路径
+	private String filePath = "";
+	private String[] shiftWord;
 
 	/**
 	 * 测试入口
 	 * 
 	 * @param args
 	 */
-	public static void main(String[] args) {
-		long startTime = System.currentTimeMillis();
-		CatchHtml ch = new CatchHtml();
-		Map<String, String> proMap = ch.readPropertieFile("catchHtml.properties");
+	private void init() {
+
+		Map<String, String> proMap = readPropertieFile("catchHtml.properties");
 		// 抓取站点url
-		String siteUrl = proMap.get("siteUrl");
+		siteUrl = proMap.get("siteUrl");
 		// 文字根url
-		String proName = proMap.get("proName");
+		proName = proMap.get("proName");
 		// 保存路径
-		String filePath = proMap.get("filePath");
-		//System.out.println(proMap.get("shiftWord"));
+		filePath = proMap.get("filePath");
 		// 屏蔽关键字
-		String[] shiftWord = proMap.get("shiftWord").split("&");
+		shiftWord = proMap.get("shiftWord").split("&");
+
+	}
+
+	/**
+	 * start Running
+	 * 
+	 * @param name
+	 */
+	public void start(String name) {
+		if(name != "" && name != null ){
+			new SearchByName().setProName(name);
+		}
+		long startTime = System.currentTimeMillis();
 		// 获取目录所在页面元素
-		Document docum = ch.getHtmlDoc(siteUrl + proName);
-		//System.out.println(docum);
+		Document docum = getHtmlDoc(siteUrl + proName);
+		// System.out.println(docum);
 		// 解析目录所在页面元素 获取所有章节url
-		Map<String, String> urlMap = ch.getElement(docum);
-		//System.out.println(urlMap.toString());
+		Map<String, String> urlMap = getElement(docum);
+		// System.out.println(urlMap.toString());
 		// 通过所有章节url 获取每个章节内容并保存
-		ch.writeFile(siteUrl, filePath, urlMap, "UTF-8", shiftWord,proName);
+		writeFile(siteUrl, filePath, urlMap, "UTF-8", shiftWord, proName);
 		long endTime = System.currentTimeMillis();
 		System.out.println("The End ! totalSum:" + (totalSum - 1) + " failureSum:" + failureSum);
 		System.out.println("run time: " + (endTime - startTime) / 6000 + "s");
@@ -74,13 +96,12 @@ public class CatchHtml {
 	 * @param url
 	 */
 	private Document getHtmlDoc(String url) {
-		System.out.println(url);
+		// System.out.println(url);
 		Document doc = null;
 		try {
-		//	 Connection conn = Jsoup.connect(url);
-		//	 conn.header("User-Agent", userAgent);
 			doc = Jsoup.connect(url).timeout(6000000)
-					.userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31")
+					.userAgent(
+							"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36")
 					.get();
 		} catch (IOException e) {
 			System.out.println("!!" + url);
@@ -88,9 +109,15 @@ public class CatchHtml {
 		}
 		return doc;
 	}
-	//Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:23.0) Gecko/20100101 Firefox/23.0
-	//Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0; BIDUBrowser 2.x)
-	//Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31
+
+	// Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like
+	// Gecko) Chrome/50.0.2661.102 Safari/537.36
+	// Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:23.0) Gecko/20100101
+	// Firefox/23.0
+	// Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0;
+	// BIDUBrowser 2.x)
+	// Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like
+	// Gecko) Chrome/26.0.1410.64 Safari/537.31
 	/**
 	 * 获取数据元素
 	 * 
@@ -98,10 +125,10 @@ public class CatchHtml {
 	 * @return Map<String,String> key 章节名 value url
 	 */
 	private Map<String, String> getElement(Document doc) {
-		//System.out.println(doc);
+		// System.out.println(doc);
 		Element singerListDiv = doc.getElementsByAttributeValue("id", "at").first();
-		//System.out.println(singerListDiv);
-		//System.out.println();
+		// System.out.println(singerListDiv);
+		// System.out.println();
 		Elements links = singerListDiv.getElementsByTag("td");
 		Map<String, String> emap = new LinkedHashMap<String, String>();
 
@@ -109,11 +136,11 @@ public class CatchHtml {
 			if (link.childNodeSize() > 0) {
 				Element linkcs = link.child(0);
 				String linkHref = linkcs.attr("href");
-				//System.out.println(linkHref);
+				// System.out.println(linkHref);
 				String linkText = link.text().trim();
-				//System.out.println(linkText + "##" + linkHref);
-				emap.put(linkText, linkHref); 
-				
+				// System.out.println(linkText + "##" + linkHref);
+				emap.put(linkText, linkHref);
+
 			}
 		}
 		System.out.println("url total：" + emap.size());
@@ -133,7 +160,7 @@ public class CatchHtml {
 	 *            屏蔽关键字
 	 */
 	private void writeFile(String siteUrl, String filePath, Map<String, String> emap, String encoding,
-			String[] shiftWord,String proName) {
+			String[] shiftWord, String proName) {
 		try {
 			File file = new java.io.File(filePath);
 			if (!file.exists()) {
@@ -149,8 +176,8 @@ public class CatchHtml {
 				String content = "";
 				while (it.hasNext()) {
 					eName = it.next();
-					content = this.getContents(eName, siteUrl + proName  + emap.get(eName), shiftWord);
-			//		System.out.println(content);
+					content = this.getContents(eName, siteUrl + proName + emap.get(eName), shiftWord);
+					// System.out.println(content);
 					bufferedWriter.write(eName);
 					bufferedWriter.newLine();
 					bufferedWriter.write(content);
@@ -175,7 +202,8 @@ public class CatchHtml {
 	 * @return
 	 */
 	private String getContents(String eName, String conUrl, String[] shiftWord) {
-		if( conUrl == "" || conUrl == null )return "";
+		if (conUrl == "" || conUrl == null)
+			return "";
 		String contents = this.getHtmlDoc(conUrl).getElementById("contents").text();
 		// 屏蔽关键词
 		for (String str : shiftWord) {
@@ -222,5 +250,99 @@ public class CatchHtml {
 			e.printStackTrace();
 		}
 		return retData;
+	}
+	public CatchHtml(){
+		init();
+	}
+	
+	public static void main(String[] args) {
+		CatchHtml cat = new CatchHtml();
+		cat.start("");
+	}
+	
+	/**
+	 * 
+	 * @author tan si xiang
+	 *
+	 *
+	 * 通过名字改变url 从而搜取对应书籍
+	 */
+	class SearchByName {
+		
+		/**
+		 * set proName
+		 * 
+		 * @param name
+		 */
+		public void setProName(String name) {
+			Document doc = getDoc(name);
+			String url = getBookURL(doc);
+			String st = (String) url.subSequence(20, url.length());
+			proName = st ;
+			//System.out.println(proName);
+		}
+
+		/**
+		 * 获取thml Document
+		 * 
+		 * @param name
+		 * 			书籍名字
+		 * @return
+		 */
+		private Document getDoc(String name) {
+			String url = getSearchURL(name);
+			Document doc = null;
+			try {
+				doc = Jsoup.connect(url).timeout(600000)
+						.userAgent(
+								"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36")
+						.get();
+			} catch (IOException e) {
+				System.out.println("search error");
+				e.printStackTrace();
+			}
+			return doc;
+		}
+		/**
+		 * get match book's url
+		 * 
+		 * @param doc
+		 * 			搜索结果
+		 * @return
+		 */
+		private String getBookURL(Document doc) {
+			String bookUrl = "";
+			Element singerListDiv = doc.getElementsByAttributeValue("class", "result-game-item-pic").first();
+
+
+			if (singerListDiv.childNodeSize() > 0) {
+				Element linkcs = singerListDiv.child(0);
+				bookUrl = linkcs.attr("href");
+			}
+			return bookUrl;
+		}
+
+		/**
+		 * 
+		 * encode and fill the information
+		 * 
+		 * @param name
+		 * @return
+		 */
+		// http://zhannei.baidu.com/cse/search?q=%E6%8B%A9%E5%A4%A9%E8%AE%B0&click=1&entry=1&s=8253726671271885340&nsid=
+		private String getSearchURL(String name) {
+			String ENCODE = "iso-8859-1";
+			String url = "";
+			try {
+				String enCode = new String(java.net.URLEncoder.encode(name, "utf-8").getBytes());
+				url = "http://zhannei.baidu.com/cse/search?q=" + enCode
+						+ "&click=1&entry=1&s=8253726671271885340&nsid=";
+
+			} catch (UnsupportedEncodingException e) {
+				System.out.println("encode error");
+				e.printStackTrace();
+			}
+			return url;
+		}
 	}
 }
