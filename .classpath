@@ -5,5 +5,7 @@
 	<classpathentry kind="lib" path="C:/Users/tan si xiang/Desktop/课题/API&amp;JAR/jsoup-1.7.2.jar"/>
 	<classpathentry kind="lib" path="C:/Users/tan si xiang/Desktop/课题/API&amp;JAR/beautyeye_lnf.jar"/>
 	<classpathentry kind="lib" path="C:/Users/tan si xiang/Desktop/课题/API&amp;JAR/htmlparser1_6/lib/htmlparser.jar"/>
+	<classpathentry kind="lib" path="mysql_connector_java_5.1.35_bin.jar"/>
+	<classpathentry kind="lib" path="mysql_connector_java_5.1.35_bin2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

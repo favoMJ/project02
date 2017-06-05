@@ -44,6 +44,8 @@ import javax.swing.UIManager;
 
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
+import com.JDBC.PositionSave;
+
 public class Notebook {
 
 	private JFrame frame;
@@ -65,6 +67,8 @@ public class Notebook {
 	private font font1;
 	private BookMark bMark;
 	int delay = 10;
+	
+	PositionSave ps = new PositionSave();
 	
 	//auto increment
 	Timer timer = new Timer(delay, evt -> {
@@ -222,13 +226,10 @@ public class Notebook {
 
 			@Override
 			public void keyPressed(KeyEvent arg0) {
-
-				if (arg0.getKeyCode() == KeyEvent.VK_UP) {
-					jsb.setValue(jsb.getValue() - jsb.getUnitIncrement());
-				}
-
-				if (arg0.getKeyCode() == KeyEvent.VK_DOWN) {
-					jsb.setValue(jsb.getValue() + jsb.getUnitIncrement());
+				if (arg0.getKeyCode() == 112) {
+				
+					int st = ps.search(fileName);
+					jsb.setValue(st);
 				}
 			}
 			public void keyReleased(KeyEvent arg0) {
@@ -421,6 +422,7 @@ public class Notebook {
 		Object options[] = { "Yes", "No" };
 		option = JOptionPane.showOptionDialog(frame, "是否退出阅读？", "exit", JOptionPane.YES_NO_OPTION,
 				JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+		ps.save(fileName, jsb.getValue());
 		switch (option) {
 		case JOptionPane.YES_OPTION:
 			System.exit(0);

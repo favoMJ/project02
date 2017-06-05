@@ -72,6 +72,7 @@ public class CatchHtml {
 	 * @param name
 	 */
 	public void start(String name) {
+		System.out.println(name);
 		if(name != "" && name != null ){
 			new SearchByName().setProName(name);
 		}
@@ -266,7 +267,7 @@ public class CatchHtml {
 	
 	public static void main(String[] args) {
 		CatchHtml cat = new CatchHtml();
-		cat.start("教练万岁");
+		cat.start("大主宰");
 	}
 	
 	/**
@@ -298,17 +299,18 @@ public class CatchHtml {
 		 * 			书籍名字
 		 * @return
 		 */
+
 		private Document getDoc(String name) {
 			String url = getSearchURL(name);
 			Document doc = null;
 			try {
-				doc = Jsoup.connect(url).timeout(600000)
+				doc = Jsoup.connect(url).timeout(6000000)
 						.userAgent(
 								"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36")
 						.get();
 			} catch (IOException e) {
-				System.out.println("search error");
-				e.printStackTrace();
+				System.out.println(url);
+				System.out.println("error code: 503");
 			}
 			return doc;
 		}
@@ -322,7 +324,7 @@ public class CatchHtml {
 		private String getBookURL(Document doc) {
 			String bookUrl = "";
 			Element singerListDiv = doc.getElementsByAttributeValue("class", "result-game-item-pic").first();
-
+			
 
 			if (singerListDiv.childNodeSize() > 0) {
 				Element linkcs = singerListDiv.child(0);

@@ -31,6 +31,7 @@ public class Disaptcher implements Runnable{
 	@Override
 	public void run() {
 //		System.out.println(req.getUrl());
+		
 		try {
 			Servlet serv = new URLServlet();
 			if( serv != null ){

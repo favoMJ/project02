@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import com.autoUpdate.AutoUpdate;
+
 
 public class SocketServer {
 	private ServerSocket server;
@@ -28,8 +30,11 @@ public class SocketServer {
 
 	private void receive()
 	{
+		AutoUpdate au = new AutoUpdate();
 		try {
 			while(!isdone){
+			au.updateInNight();
+			
 			Socket socket = server.accept();
 			Thread t = new Thread(new Disaptcher(socket));
 			t.setDaemon(true);
