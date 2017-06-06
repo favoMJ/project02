@@ -37,7 +37,7 @@ public class Client {
 			//if(client.getInputStream().available() < 1){};
 			new Notebook(client.getInputStream());
 		} catch (Exception e) {
-			System.out.println("createInfo error");
+			System.out.println("createInfo error， Socket does't start");
 		}
 	}
 	

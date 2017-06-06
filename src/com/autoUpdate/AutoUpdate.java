@@ -71,6 +71,7 @@ public class AutoUpdate {
 			if( fileName.endsWith(".txt")){
 				String st = fileName.replace(".txt", "");
 				ch.start(st);
+				System.out.println(st+"更新成功");
 			}
 		}
 	}

@@ -213,12 +213,8 @@ public class CatchHtml {
 		}
 		contents = contents.replaceAll("     ", "####");
 		contents = contents.replaceAll("####", "\n    ");
-//		contents = contents.replaceAll(" ","\n");
-//		contents = contents.replaceAll("  ","\n");
-		System.out.println(contents);
-		
-		//contents = contents.replaceAll("####","  \n");
-		//System.out.println(contents);
+//		System.out.println(contents);
+
 		// 抓取内容长度大于100 即成功
 		if (contents.length() > 100) {
 			System.out.println("Succeed - " + totalSum + eName);
@@ -267,7 +263,7 @@ public class CatchHtml {
 	
 	public static void main(String[] args) {
 		CatchHtml cat = new CatchHtml();
-		cat.start("大主宰");
+		cat.start("择天记");
 	}
 	
 	/**
