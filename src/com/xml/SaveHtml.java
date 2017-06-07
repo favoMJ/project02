@@ -53,7 +53,8 @@ public class SaveHtml {
 	// 章节，小说名对应
 	private Map<String, String> chapterMap;
 	NovelXml novelXml;
-
+	
+	
 	/**
 	 * 测试入口
 	 * 
@@ -214,7 +215,7 @@ public class SaveHtml {
 		String eName = "";
 		while (it.hasNext()) {
 			eName = it.next();
-			nc.createNovelNode(eName.trim(), siteUrl + proName + emap.get(eName));
+			nc.createNovelNode(eName.trim(), emap.get(eName));
 		}
 		novelXml.createXml(filePath + "novel.xml");
 	}

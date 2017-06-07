@@ -20,6 +20,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.xml.ParseXml;
+import com.xml.SaveHtml;
+
 
 /**
  *
@@ -72,17 +75,17 @@ public class CatchHtml {
 	 * @param name
 	 */
 	public void start(String name) {
-		System.out.println(name);
+		
 		if(name != "" && name != null ){
 			new SearchByName().setProName(name);
 		}
+		
+		
 		long startTime = System.currentTimeMillis();
-		// 获取目录所在页面元素
-		Document docum = getHtmlDoc(siteUrl + proName);
-		// System.out.println(docum);
-		// 解析目录所在页面元素 获取所有章节url
-		Map<String, String> urlMap = getElement(docum);
-		// System.out.println(urlMap.toString());
+//		// 获取目录所在页面元素
+//		Document docum = getHtmlDoc(siteUrl + proName);
+//		// 解析目录所在页面元素 获取所有章节url
+		 Map<String,String> urlMap = new ParseXml().start(name);
 		// 通过所有章节url 获取每个章节内容并保存
 		writeFile(siteUrl, filePath + name + ".txt", urlMap, "UTF-8", shiftWord, proName);
 		long endTime = System.currentTimeMillis();
@@ -125,10 +128,7 @@ public class CatchHtml {
 	 * @return Map<String,String> key 章节名 value url
 	 */
 	private Map<String, String> getElement(Document doc) {
-		// System.out.println(doc);
 		Element singerListDiv = doc.getElementsByAttributeValue("id", "at").first();
-		// System.out.println(singerListDiv);
-		// System.out.println();
 		Elements links = singerListDiv.getElementsByTag("td");
 		Map<String, String> emap = new LinkedHashMap<String, String>();
 
@@ -136,9 +136,7 @@ public class CatchHtml {
 			if (link.childNodeSize() > 0) {
 				Element linkcs = link.child(0);
 				String linkHref = linkcs.attr("href");
-				// System.out.println(linkHref);
 				String linkText = link.text().trim();
-				// System.out.println(linkText + "##" + linkHref);
 				emap.put(linkText, linkHref);
 
 			}
@@ -263,7 +261,7 @@ public class CatchHtml {
 	
 	public static void main(String[] args) {
 		CatchHtml cat = new CatchHtml();
-		cat.start("择天记");
+		cat.start("教练万岁");
 	}
 	
 	/**

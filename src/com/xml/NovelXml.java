@@ -199,8 +199,7 @@ public class NovelXml implements XmlInterface {
 
 	@Override
 	public void parserXml(String fileName) {
-		// TODO Auto-generated method stub
-		new NovelParse().parserXml(fileName);
+		
 	}
 
 	public static void main(String[] args) {
