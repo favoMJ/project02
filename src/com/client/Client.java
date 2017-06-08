@@ -35,7 +35,7 @@ public class Client {
 			
 			Scanner scan = new Scanner(client.getInputStream());
 			//if(client.getInputStream().available() < 1){};
-			new Notebook(client.getInputStream());
+			new Notebook(client.getInputStream(),name+".txt");
 		} catch (Exception e) {
 			System.out.println("createInfo error， Socket does't start");
 		}
@@ -57,7 +57,7 @@ public class Client {
 		UIManager.put("RootPane.setupButtonVisible", false);
 		JPanel jp = new JPanel();
 		JPanel jPanel = new JPanel();
-		JLabel jLable = new JLabel();
+		JLabel jLable = new JLabel(); 
 		jLable.setText("输入小说名称");
 		
 		

@@ -46,6 +46,8 @@ import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
 import com.JDBC.PositionSave;
 
+import snippet.Snippet;
+
 public class Notebook {
 
 	private JFrame frame;
@@ -56,7 +58,7 @@ public class Notebook {
 	private JMenuItem font, color, background, speed;
 	private JMenuItem find, changeto;
 	private JMenuItem helps, about;
-	private JMenuItem setMark, openMark;
+	private JMenuItem  openMark,setMark;
 	private Boolean autoLineWrap = true;
 	private String fileName = "未命名";// 文件名
 
@@ -74,11 +76,11 @@ public class Notebook {
 	Timer timer = new Timer(delay, evt -> {
 		jsb.setValue(jsb.getValue() + jsb.getUnitIncrement());
 	});
-	public Notebook(InputStream is) throws Exception
+	public Notebook(InputStream is,String name) throws Exception
 	{
 		this();
 		frameInit();
-		fileOpen(is);
+		fileOpen(is,name);
 	}
 	public Notebook() throws Exception {
 		org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
@@ -123,7 +125,7 @@ public class Notebook {
 		format = new JMenu("格式");
 		search = new JMenu("搜索");
 		help = new JMenu("帮助");
-		mark = new JMenu("书签"); 
+		mark = new JMenu("朗读"); 
 		
 //		menuBar.add(mark);		
 //		menuBar.add(file);
@@ -139,12 +141,11 @@ public class Notebook {
 		file.add(exit);
 
 		
-		//书签菜单项
-		setMark = new JMenuItem("设置...");
-		openMark = new JMenuItem("打开...");
-		mark.add(setMark);
+		//朗读菜单项
+		openMark = new JMenuItem("开始...");
+		setMark = new JMenuItem("结束...");
 		mark.add(openMark);
-		
+		mark.add(setMark);
 		// 格式菜单项
 		// autoLine = new JCheckBoxMenuItem("自动换行");
 
@@ -327,9 +328,14 @@ public class Notebook {
 		}
 		);
 		
-		setMark.addActionListener(new ActionListener() {
+		openMark.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				bMark.addEventHandler();
+				try {
+					bMark.addEventHandler();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}		
 		}
 		);
@@ -380,23 +386,23 @@ public class Notebook {
 		}
 
 	}
-	private void fileOpen(InputStream is) {
+	private void fileOpen(InputStream is,String name) {
 
 		textArea.setText("");
 		if (is == null)
 			return;
 		FileInputStream fis = null;
 		BufferedReader br = null;
-
+		fileName = name;
 		try {
 			Scanner scan = new Scanner(is);
 			String str = null;
+			
 			while (scan.hasNext()) {
 				str = scan.nextLine();
 				textArea.append(str + "\n");
 			}
 
-			//System.out.println("打开成功");
 			textArea.setCaretPosition(0);
 
 		} finally {
@@ -422,6 +428,7 @@ public class Notebook {
 		Object options[] = { "Yes", "No" };
 		option = JOptionPane.showOptionDialog(frame, "是否退出阅读？", "exit", JOptionPane.YES_NO_OPTION,
 				JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+		//System.out.println(fileName);
 		ps.save(fileName, jsb.getValue());
 		switch (option) {
 		case JOptionPane.YES_OPTION:
@@ -476,6 +483,38 @@ public class Notebook {
 		nt.frameInit();
 
 	}
+	
+	class BookMark {
+		JFrame jf = new JFrame("字体设置");
+
+		public BookMark( ) {
+			JLabel label1 = new JLabel(" 阅读 ");
+
+			jf.setLayout(new BorderLayout());
+			JPanel p1 = new JPanel();
+			
+			p1.add(label1);
+
+			jf.add(p1, BorderLayout.NORTH);
+
+			jf.setSize(540, 200);
+			jf.setLocation(300, 200);
+			jf.setVisible(false);
+			jf.setResizable(false);
+		}
+
+		void addEventHandler() throws Exception {
+			if( textArea.getText().length() < 10 ){
+				return;
+			}
+			Snippet snippet = new Snippet(textArea.getText());
+			//System.out.println(new Notebook().textArea.getText());
+			jsb.setUnitIncrement(0);
+			new Thread(snippet).start();
+		}
+
+	}
+
 
 }
 
@@ -561,45 +600,6 @@ class font {
 	}
 
 }
-class BookMark {
-
-	private JTextArea textArea;
-
-	JFrame jf = new JFrame("字体设置");
-
-	public BookMark( ) {
-
-		JLabel label1 = new JLabel(" 保存书签 ");
-		JLabel label2 = new JLabel(" 打开书签");
-
-
-		jf.setLayout(new BorderLayout());
-		JPanel p1 = new JPanel();
-		
-
-		p1.add(label1);
-		p1.add(label2);
-
-	
-
-		jf.add(p1, BorderLayout.NORTH);
-
-
-		jf.setSize(540, 200);
-		jf.setLocation(300, 200);
-		jf.setVisible(false);
-		jf.setResizable(false);
-		// addEventHandler();
-	}
-
-	void addEventHandler() {
-		System.out.println("!!");
-		jf.setVisible(false);
-		
-
-	}
-
-}
 
 class Speed implements ItemListener {
 
@@ -626,14 +626,13 @@ class Speed implements ItemListener {
 		jlb1 = new JLabel("滚屏速度");
 		jbt = new JButton("确定");
 
-		// jcheckbox = new JCheckBox("自动滚屏");
 
 		jcbb = new JComboBox(msg);
 		jfrm.setLayout(new FlowLayout());
 		jfrm.add(jlb1);
 		jfrm.add(jcbb);
 
-		// jfrm.add(jcheckbox);
+	
 
 		jfrm.add(jbt);
 		jfrm.setVisible(false);

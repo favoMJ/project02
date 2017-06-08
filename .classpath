@@ -8,6 +8,7 @@
 	<classpathentry kind="lib" path="mysql_connector_java_5.1.35_bin.jar"/>
 	<classpathentry kind="lib" path="mysql_connector_java_5.1.35_bin2.jar"/>
 	<classpathentry kind="lib" path="dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="jacob.jar" sourcepath="C:/Users/tan si xiang/Desktop/jacob-1.17-M2/jacob.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
